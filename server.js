@@ -4,12 +4,23 @@ const cors=require("cors");
 const bodyParser = require('body-parser')
 const { json } = require('body-parser')
 
+const urlProduct = "C:/Users/Administrator/Desktop/site-user/src/assets/test.json"
+const urlOrder = "C:/Users/Administrator/Desktop/site-user/src/assets/ordertest.json"
+const urlUser = "C:/Users/Administrator/Desktop/site-user/src/assets/userTest.json"
+
 const app = express()
 const corsOptions ={
    origin:'*', 
    credentials:true,            //access-control-allow-credentials:true
    optionSuccessStatus:200,
 }
+
+app.all('/', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next()
+  });
+
 
 app.use(cors(corsOptions))
 const PORT = 9000
@@ -57,13 +68,19 @@ const saveOrder = (dog) => {
     const jsonData = JSON.stringify(dog)
     fs.writeFile('C:/Users/Administrator/Desktop/site-user/src/assets/ordertest.json', jsonData, finished)
 }
+
+const saveDataApi = (dataRequest, url) => {
+    const finished = (err) => {
+        if(err) {
+            console.error(err)
+            return
+        }
+    }
+    const jsonData = JSON.stringify(dataRequest)
+    fs.writeFile(url, jsonData, finished)
+}
 //saveData(dog)
 
-app.all('/', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next()
-  });
 
 
 app.post("/data", (req, res) => {
@@ -84,4 +101,11 @@ app.post("/order", (req, res) => {
     result = result.slice(0,-2) + "]}]"
     //console.log(Object.keys(req.body)[0])
     saveOrder(req.body); 
+})
+
+app.post("/user", (req,res) => {
+    console.log("da vao day")
+    console.log("order " + req.body)
+  
+    saveDataApi(req.body, urlUser); 
 })
